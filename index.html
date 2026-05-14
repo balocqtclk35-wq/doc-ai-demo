@@ -15,7 +15,7 @@
 <img id="preview" width="300">
 <h3 id="result">Loading model...</h3>
 
-<!-- ✅ SCRIPT ĐÚNG TUYỆT ĐỐI -->
+<!-- ✅ SCRIPT ĐÚNG -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4/dist/teachablemachine-image.min.js"></script>
 
@@ -24,15 +24,12 @@ const URL = "https://teachablemachine.withgoogle.com/models/MEVmvU0Ci/";
 
 let model;
 
-// Load model
 async function init() {
   try {
-    console.log("Loading model...");
     model = await tmImage.load(
       URL + "model.json",
       URL + "metadata.json"
     );
-    console.log("✅ Model loaded");
     document.getElementById("result").innerText = "✅ Model loaded";
   } catch (err) {
     console.error(err);
@@ -42,7 +39,6 @@ async function init() {
 
 init();
 
-// Upload image
 document.getElementById("imageUpload").addEventListener("change", async function(e) {
 
   if (!model) {
@@ -63,8 +59,7 @@ document.getElementById("imageUpload").addEventListener("change", async function
     await new Promise(r => img.onload = r);
 
     const predictions = await model.predict(img);
-
-    predictions.sort((a,b) => b.probability - a.probability);
+    predictions.sort((a,b)=>b.probability-a.probability);
 
     const top = predictions[0];
 
