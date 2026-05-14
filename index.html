@@ -104,3 +104,16 @@ function confirmResult(isCorrect) {
     finalLabel = predictedClass;
   } else {
     document.getElementById("correctLabel").style.display = "block";
+    finalLabel = document.getElementById("correctLabel").value;
+  }
+
+  // ✅ logging (sau này sẽ lưu DB)
+  console.log("Predicted:", predictedClass);
+  console.log("Final:", finalLabel);
+
+  alert("Đã ghi nhận: " + finalLabel);
+}
+</script>
+
+</body>
+</html>
