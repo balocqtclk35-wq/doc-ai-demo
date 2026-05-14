@@ -15,7 +15,7 @@
 <img id="preview" width="300">
 <h3 id="result">Loading model...</h3>
 
-<!-- ✅ LOAD ĐÚNG -->
+<!-- ✅ SCRIPT ĐÚNG CHUẨN -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4"></script>
 
@@ -24,7 +24,7 @@ const URL = "https://teachablemachine.withgoogle.com/models/MEVmvU0Ci/";
 
 let model;
 
-// load model
+// Load model
 async function init() {
   try {
     model = await tmImage.load(
@@ -40,7 +40,7 @@ async function init() {
 
 init();
 
-// upload ảnh
+// Handle upload
 document.getElementById("imageUpload").addEventListener("change", async function(e) {
 
   if (!model) {
@@ -49,6 +49,8 @@ document.getElementById("imageUpload").addEventListener("change", async function
   }
 
   const file = e.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
 
   reader.onload = async function(evt) {
@@ -65,7 +67,8 @@ document.getElementById("imageUpload").addEventListener("change", async function
     const top = predictions[0];
 
     document.getElementById("result").innerHTML =
-      top.className + " (" + (top.probability*100).toFixed(1) + "%)";
+      "<b>" + top.className + "</b><br>" +
+      "Confidence: " + (top.probability * 100).toFixed(2) + "%";
   };
 
   reader.readAsDataURL(file);
