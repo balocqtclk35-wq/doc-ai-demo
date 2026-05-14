@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Document Classification</title>
+</head>
+<body>
+
+<h2>Document Classification Demo</h2>
+
+<input type="file" id="imageUpload"/>
+<br><br>
+
+<img id="preview" width="300"/>
+<h3 id="result">Loading model...</h3>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.5"></script>
+
+<script>
+const URL = "https://teachablemachine.withgoogle.com/models/MEVmvU0Ci/";
+
+let model;
+
+async function init() {
+  try {
+    console.log("Loading model...");
+    model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+
+    console.log("✅ Model loaded");
+    document.getElementById("result").innerText = "✅ Model loaded. Upload image.";
+
+  } catch (e) {
+    console.error("❌ Load error:", e);
+    document.getElementById("result").innerText = "❌ Load model failed";
+  }
+}
+
+init();
+
+document.getElementById("imageUpload").addEventListener("change", async function(event) {
+
+  if (!model) {
+    alert("Model chưa load xong!");
+    return;
+  }
+
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = async function(e) {
+    const img = document.getElementById("preview");
+    img.src = e.target.result;
+
+    await new Promise(resolve => img.onload = resolve);
+
+    const prediction = await model.predict(img);
+
+    prediction.sort((a, b) => b.probability - a.probability);
+
+    const top = prediction[0];
+
+    document.getElementById("result").innerHTML =
+      "Document: " + top.className +
+      "<br>Confidence: " + (top.probability * 100).toFixed(2) + "%";
+  };
+
+  reader.readAsDataURL(file);
+});
+</script>
+
+</body>
+</html>
