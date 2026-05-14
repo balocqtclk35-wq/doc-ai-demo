@@ -84,9 +84,15 @@ document.getElementById("imageUpload").addEventListener("change", async function
     // ✅ lưu kết quả AI
     predictedClass = top.className;
 
-    document.getElementById("result").innerHTML =
-      "<b>" + top.className + "</b><br>" +
-      "Confidence: " + (top.probability * 100).toFixed(2) + "%";
+    let prob = top.probability;
+
+if (prob >= 0.8) {
+  document.getElementById("result").innerHTML =
+    "<b>" + top.className + "</b><br>✅ OK";
+} else {
+  document.getElementById("result").innerHTML =
+    "<b>" + top.className + "</b><br>❌ NOT OK";
+}
 
     // ✅ hiển thị feedback
     document.getElementById("feedback").style.display = "block";
