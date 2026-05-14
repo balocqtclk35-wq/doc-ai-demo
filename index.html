@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Document Classification</title>
 </head>
+
 <body>
 
 <h2>Document Classification Demo</h2>
@@ -14,33 +15,32 @@
 <img id="preview" width="300">
 <h3 id="result">Loading model...</h3>
 
-<!-- ✅ LOAD THƯ VIỆN ĐÚNG -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0ript src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4"></script>
+<!-- ✅ LOAD ĐÚNG -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4"></script>
 
 <script>
 const URL = "https://teachablemachine.withgoogle.com/models/MEVmvU0Ci/";
 
-let model = null;
+let model;
 
-// Load model
+// load model
 async function init() {
   try {
-    console.log("Loading model...");
     model = await tmImage.load(
       URL + "model.json",
       URL + "metadata.json"
     );
-    console.log("Model loaded");
-    document.getElementById("result").innerText = "✅ Model loaded - chọn ảnh để test";
+    document.getElementById("result").innerText = "✅ Model loaded";
   } catch (err) {
-    console.error("Load lỗi:", err);
+    console.error(err);
     document.getElementById("result").innerText = "❌ Load model failed";
   }
 }
 
 init();
 
-// Khi chọn ảnh
+// upload ảnh
 document.getElementById("imageUpload").addEventListener("change", async function(e) {
 
   if (!model) {
@@ -49,8 +49,6 @@ document.getElementById("imageUpload").addEventListener("change", async function
   }
 
   const file = e.target.files[0];
-  if (!file) return;
-
   const reader = new FileReader();
 
   reader.onload = async function(evt) {
@@ -58,17 +56,16 @@ document.getElementById("imageUpload").addEventListener("change", async function
     const img = document.getElementById("preview");
     img.src = evt.target.result;
 
-    await new Promise(resolve => img.onload = resolve);
+    await new Promise(r => img.onload = r);
 
     const predictions = await model.predict(img);
 
-    predictions.sort((a, b) => b.probability - a.probability);
+    predictions.sort((a,b)=>b.probability-a.probability);
 
     const top = predictions[0];
 
     document.getElementById("result").innerHTML =
-      "<b>" + top.className + "</b><br>" +
-      "Confidence: " + (top.probability * 100).toFixed(2) + "%";
+      top.className + " (" + (top.probability*100).toFixed(1) + "%)";
   };
 
   reader.readAsDataURL(file);
