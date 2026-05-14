@@ -13,23 +13,18 @@
 <br><br>
 
 <img id="preview" width="300">
-<h3 id="result">⏳ Loading model...</h3>
+<h3 id="result">Loading model...</h3>
 
-<!-- ✅ LOAD LIB - dùng bản ổn định -->
+<!-- ✅ SCRIPT ĐÚNG CÚ PHÁP -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4"></script>
 
 <script>
-// 🔥 FIX cứng lỗi external script
-window.exports = {};
-window.module = {};
-window.require = function(){};
-
 const URL = "https://teachablemachine.withgoogle.com/models/MEVmvU0Ci/";
 
 let model;
 
-// load model
+// Load model
 async function init() {
   try {
     model = await tmImage.load(
@@ -45,12 +40,17 @@ async function init() {
 
 init();
 
-// upload ảnh
+// Upload image
 document.getElementById("imageUpload").addEventListener("change", async function(e) {
 
-  if (!model) return alert("Chưa load xong");
+  if (!model) {
+    alert("Model chưa load xong!");
+    return;
+  }
 
   const file = e.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
 
   reader.onload = async function(evt) {
