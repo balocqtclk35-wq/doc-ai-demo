@@ -1,42 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Document Classification</title>
 </head>
+
 <body>
 
 <h2>Document Classification Demo</h2>
 
-<input type="file" id="imageUpload"/>
+<input type="file" id="imageUpload">
 <br><br>
 
-<img id="preview" width="300"/>
-<h3 id="result">Loading model...</h3>
+<img id="preview" width="300">
+<h3 id="result">🔄 Loading model...</h3>
 
+<!-- ✅ LOAD LIBRARIES ĐÚNG -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.5"></script>
 
 <script>
+/* ✅ FIX LỖI exports bị inject bên ngoài */
+window.exports = {};
+
 const URL = "https://teachablemachine.withgoogle.com/models/MEVmvU0Ci/";
 
 let model;
 
+// 🔹 Load model
 async function init() {
   try {
     console.log("Loading model...");
-    model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+
+    model = await tmImage.load(
+      URL + "model.json",
+      URL + "metadata.json"
+    );
 
     console.log("✅ Model loaded");
-    document.getElementById("result").innerText = "✅ Model loaded. Upload image.";
+    document.getElementById("result").innerText =
+      "✅ Model loaded. Upload image.";
 
-  } catch (e) {
-    console.error("❌ Load error:", e);
-    document.getElementById("result").innerText = "❌ Load model failed";
+  } catch (error) {
+    console.error("❌ Load error:", error);
+    document.getElementById("result").innerText =
+      "❌ Load model failed";
   }
 }
 
 init();
 
+// 🔹 Khi chọn ảnh
 document.getElementById("imageUpload").addEventListener("change", async function(event) {
 
   if (!model) {
@@ -50,6 +64,7 @@ document.getElementById("imageUpload").addEventListener("change", async function
   const reader = new FileReader();
 
   reader.onload = async function(e) {
+
     const img = document.getElementById("preview");
     img.src = e.target.result;
 
@@ -57,13 +72,26 @@ document.getElementById("imageUpload").addEventListener("change", async function
 
     const prediction = await model.predict(img);
 
+    // Sắp xếp kết quả
     prediction.sort((a, b) => b.probability - a.probability);
 
     const top = prediction[0];
 
+    // ✅ Logic hiển thị
+    let status = "";
+
+    if (top.probability >= 0.8) {
+      status = "✅ ACCEPT";
+    } else if (top.probability >= 0.6) {
+      status = "⚠️ REVIEW";
+    } else {
+      status = "❌ UNKNOWN";
+    }
+
     document.getElementById("result").innerHTML =
-      "Document: " + top.className +
-      "<br>Confidence: " + (top.probability * 100).toFixed(2) + "%";
+      "Document: <b>" + top.className + "</b><br>" +
+      "Confidence: " + (top.probability * 100).toFixed(2) + "%<br>" +
+      "Status: " + status;
   };
 
   reader.readAsDataURL(file);
@@ -72,3 +100,4 @@ document.getElementById("imageUpload").addEventListener("change", async function
 
 </body>
 </html>
+``
